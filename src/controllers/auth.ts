@@ -1,21 +1,23 @@
-import { Request,Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prismaCilent } from "..";
 import {hashSync, compareSync} from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "../secrets";
+import { BadRequestException } from "../exceptions/badRequests";
+import {ErrorCode} from '../exceptions/root'
+import { UprocessableEntity } from "../exceptions/validation";
+import { SignupSchema } from "../schema/users";
+import { NotFoundException } from "../exceptions/not-found";
 
 
-export const signup = async (req:Request, res:Response) =>{
+export const signup = async (req:Request, res:Response ,next: NextFunction) =>{
     try{
+        SignupSchema.parse(req.body)
         const { email, password, username } = req.body;
 
         let existingUser = await prismaCilent.user.findFirst({where:{email}})
         if (existingUser) {
-            res.status(400).json({
-                status:400,
-                message: "User is alread exit"
-            });
-            return;
+           next(new BadRequestException("User is alreay exists!!", ErrorCode.USER_ALREADY_EXISTS));
         }
 
         const user = await prismaCilent.user.create({
@@ -26,18 +28,14 @@ export const signup = async (req:Request, res:Response) =>{
           },
         });
     res.status(200).json({
-        status: 201,
+        status: 200,
         success: true,
         message: "User created successfully",
         user: user,
     });
 
-    }catch(error: any) {
-        console.log(error)
-        res.status(400).json({
-            status: 400,
-            message: error.message.toString(),
-        })
+    }catch(err:any) {
+        next(new UprocessableEntity(err?.issues, 'Unprocessable entity', ErrorCode.UNPROCESSABLE_ENTITY));
     }
 }
 
@@ -47,24 +45,22 @@ export const login = async (req:Request, res:Response) =>{
 
         let user = await prismaCilent.user.findFirst({where: {email}})
         if(!user){
-            res.status(400).json({
-              status: 400,
-              message: "Please Enter the credential",
-            });
-            return;
+           throw new NotFoundException(
+             "User not found!",
+             ErrorCode.USER_NOT_FOUND
+           );
         }
         if(!compareSync(password, user.password)){
-            res.status(403).json({
-              status: 403,
-              message: "email or password is not correct",
-            });
-            return;
+            throw new BadRequestException(
+              "Incorrect password!",
+              ErrorCode.INCORRECT_PASSWORD
+            );
         }
         const token = jwt.sign({
             userId: user.id
         },JWT_SECRET)
         res.json({user, token})
-        
+
         res.status(200).json(user).end();
         return;
 
@@ -75,4 +71,8 @@ export const login = async (req:Request, res:Response) =>{
             message: error.message.toString()
         })
     }
+}
+
+export const me = async (req: Request, res:Response) =>{
+    res.json(req.user)
 }
