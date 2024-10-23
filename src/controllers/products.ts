@@ -35,7 +35,7 @@ export const updateProduct = async(req:Request, res:Response) => {
   }
 }
 export const deleteProduct = async(req:Request, res:Response) => {
-   
+
 }
 
 export const listProducts = async(req:Request, res:Response) => {
