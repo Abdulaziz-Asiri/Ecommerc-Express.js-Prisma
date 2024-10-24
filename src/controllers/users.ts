@@ -3,8 +3,7 @@ import { prismaCilent } from "..";
 import { AddressSchema, UpdateUserSchema } from "../schema/users";
 import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
-import { Address, Prisma, PrismaClient, User } from "@prisma/client";
-import { NONAME } from "dns";
+import { Address} from "@prisma/client";
 import { BadRequestException } from "../exceptions/badRequests";
 
 export const addAddress = async(req:Request, res:Response) => {
@@ -16,7 +15,6 @@ export const addAddress = async(req:Request, res:Response) => {
             userId: req.user.id
         }
     })
-
     res.json(address)
 } 
 

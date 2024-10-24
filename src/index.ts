@@ -13,7 +13,24 @@ app.use(express.json()) // middleware module used to parse incoming request bodi
 app.use('/', rootRouter)
 
 export const prismaCilent = new PrismaClient({
-    log:['query']
-})
+  log: ["query"],
+}).$extends({
+  result: {
+    address: {
+      formattedAddress: {
+        needs: {
+          lineOne: true,
+          linetwo: true,
+          city: true,
+          conutry: true,
+          pincode: true,
+        },
+        compute: (addr) => {
+          return `${addr.lineOne}, ${addr.linetwo}, ${addr.city}, ${addr.conutry}-${addr.pincode}`;
+        },
+      },
+    },
+  },
+});
 app.use(errorMiddleware)
 app.listen(PORT, ()=> {console.log("Server running on http://localhost:3000");})
