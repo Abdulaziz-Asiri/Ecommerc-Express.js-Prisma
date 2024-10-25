@@ -89,7 +89,6 @@ export const updatUser = async (req:Request, res:Response) => {
         );
       }
     }
-
     const updatedUser = await prismaCilent.user.update({
       where: {
         id: req.user.id,
@@ -97,5 +96,49 @@ export const updatUser = async (req:Request, res:Response) => {
       data: validatedData,
     });
     res.json(updatedUser);
+}
 
+export const listUsers = async (req: Request, res: Response) => {
+  const users = await prismaCilent.user.findMany({
+    skip: +req.query.skip || 0,
+    take: 5,
+  });
+  res.json(users);
+};
+
+
+export const getUserById = async (req:Request, res:Response) =>{
+  try{
+    const user = await prismaCilent.user.findFirstOrThrow({
+      where: {
+        id: +req.params.id,
+      },
+      include: {
+        address: true,
+        orders: true,
+      },
+    });
+    res.json(user)
+
+  }catch(error){
+    throw new NotFoundException("User not Found!!", ErrorCode.USER_NOT_FOUND)
+  } 
+  
+}
+export const changeUsesrRole = async (req:Request, res:Response) =>{
+   
+  try{
+    const user = await prismaCilent.user.update({
+      where: {
+        id: +req.params.id
+      },
+      data: {
+        role: req.body.role
+      }
+    })
+    res.json(user)
+
+  }catch(error){
+    throw new NotFoundException("User not Found", ErrorCode.USER_NOT_FOUND)
+  }
 }

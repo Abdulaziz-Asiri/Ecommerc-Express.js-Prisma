@@ -99,23 +99,23 @@ export const cancelOrder = async (req: Request, res: Response) => {
 
 export const getOrderById = async (req: Request, res: Response) => {
   try {
-    const order = await prismaCilent.order.findFirstOrThrow({
+    const orders = await prismaCilent.order.findFirstOrThrow({
       where: {
-        id: +req.params.id,
+        id: +req.params.id
       },
-      include: {
+      include:{
         orderProduct: true,
         events: true,
       },
-    });
-    res.json(order);
+    })
+    res.json(orders)
   } catch (err) {
     throw new NotFoundException("Order not found", ErrorCode.ORDER_NOT_FOUND);
   }
 };
 
 export const listAllOrders = async (req: Request, res: Response) => {
-  let whereClause = {};
+  let whereClause = {}; //filter based on status
   const status = req.query.status;
   if (status) {
     whereClause = {
