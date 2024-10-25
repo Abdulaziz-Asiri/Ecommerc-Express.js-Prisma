@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { prismaCilent } from "..";
 import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
+import { Prisma } from "@prisma/client";
 
 export const createProduct = async(req:Request, res:Response) => {
 
@@ -48,7 +49,7 @@ export const listProducts = async(req:Request, res:Response) => {
     count, data:products
   })
 }
-export const getProduct = async(req:Request, res:Response) => {
+export const getProductById = async(req:Request, res:Response) => {
   try{
     const product = await prismaCilent.product.findFirstOrThrow({
       where:{
@@ -61,3 +62,40 @@ export const getProduct = async(req:Request, res:Response) => {
     throw new NotFoundException('there is no product', ErrorCode.PRODUCT_NOT_FOUND)
   }
 }
+
+// export const searchProducts = async (req: Request, res: Response) => {
+//   try {
+//     const searchTerm = req.params.query; // Ensure this is the correct query parameter
+
+//     // Transform the search term into a format suitable for to_tsquery
+//     const formattedSearchTerm = searchTerm.split(" ").join(" & ");
+
+//     const searchResults = await prismaCilent.$queryRaw`
+//       SELECT * FROM "product"
+//       WHERE to_tsvector('english', "name" || ' ' || "description" || ' ' || "tags") 
+//       @@ to_tsquery('english', ${formattedSearchTerm});
+//     `;
+
+//     res.json(searchResults);
+//   } catch (error) {
+//     res.status(500).json({ error: "Error executing search" });
+//   }
+// };
+
+//TODO
+export const searchProducts = async (req: Request, res: Response) => {
+  try {
+    const searchTerm = req.query.q as string;
+    console.log("Query Text",searchTerm)
+    const searchResults = await prismaCilent.$queryRaw`
+      SELECT * FROM "products"
+      WHERE to_tsvector('english', "name" || ' ' || "description" || ' ' || "tags") 
+      @@ plainto_tsquery(${searchTerm});
+    `;
+
+    res.json(searchResults);
+  } catch (error) {
+    console.error("Error executing full-text search:", error);
+    res.status(500).json({ error: "Error executing full-text search" });
+  }
+};

@@ -5,11 +5,11 @@ import {
   updateProduct,
   deleteProduct,
   listProducts,
-  getProduct,
+  getProductById,
+  searchProducts,
 } from "../controllers/products";
 import authMiddelware from '../middlewares/auth'
 import adminMiddleware from '../middlewares/admin';
-import { getPreEmitDiagnostics } from 'typescript';
 
 const productsRoutes:Router = Router()
 
@@ -17,6 +17,9 @@ const productsRoutes:Router = Router()
     productsRoutes.put('/updateProduct/:id',[authMiddelware, adminMiddleware],errorHandler(updateProduct));
     productsRoutes.delete('/delete/:id',[authMiddelware, adminMiddleware],errorHandler(deleteProduct));
     productsRoutes.get('/list',[authMiddelware, adminMiddleware],errorHandler(listProducts));
-    productsRoutes.get('/getProduct/:id',[authMiddelware, adminMiddleware],errorHandler(getProduct));
+    productsRoutes.get('/getProduct/:id',[authMiddelware, adminMiddleware],errorHandler(getProductById));
+    productsRoutes.get('/search', [authMiddelware], errorHandler(searchProducts))
 
+
+    
 export default productsRoutes
