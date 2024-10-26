@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prismaCilent } from "..";
 import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
+import { produceMessage } from "../kafka/producer";
 
 export const createOrder = async (req: Request, res: Response) => {
   // 1. to create a transaction
@@ -48,6 +49,10 @@ export const createOrder = async (req: Request, res: Response) => {
         },
       },
     });
+    await produceMessage("user-topic", {
+      event: `Order number ${order.id} with amount ${order.netAmount} has been created Successflly!`,
+      order,
+    });
     const orderEvent = await tx.orderEvent.create({
       data: {
         orderId: order.id,
@@ -90,6 +95,10 @@ export const cancelOrder = async (req: Request, res: Response) => {
         orderId: order.id,
         status: "CANCELLED",
       },
+    });
+    await produceMessage("user-topic", {
+      event: `Order number ${order.id} with amount ${order.netAmount} has been Canceled Successflly!`,
+      order,
     });
     res.json(order);
   } catch (err) {
@@ -146,6 +155,10 @@ export const changeStatus = async (req: Request, res: Response) => {
         orderId: order.id,
         status: req.body.status,
       },
+    });
+    await produceMessage("user-topic", {
+      event: `Status Order number ${order.id} has been changed Successflly!`,
+      order,
     });
     res.json(order);
   } catch (err) {

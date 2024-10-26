@@ -5,6 +5,7 @@ import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
 import { Address} from "@prisma/client";
 import { BadRequestException } from "../exceptions/badRequests";
+import { produceMessage } from "../kafka/producer";
 
 export const addAddress = async(req:Request, res:Response) => {
     AddressSchema.parse(req.body)
@@ -15,6 +16,10 @@ export const addAddress = async(req:Request, res:Response) => {
             userId: req.user.id
         }
     })
+    await produceMessage("user-topic", {
+      event: "Address Add Successfully!!",
+      address,
+    });
     res.json(address)
 } 
 
@@ -136,6 +141,10 @@ export const changeUsesrRole = async (req:Request, res:Response) =>{
         role: req.body.role
       }
     })
+    await produceMessage("user-topic", {
+      event: "User Role Changed Successfully!!",
+      user,
+    });
     res.json(user)
 
   }catch(error){

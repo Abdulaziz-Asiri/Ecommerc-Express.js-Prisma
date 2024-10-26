@@ -4,6 +4,7 @@ import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
 import { CreateCartSchema, ChangeQuantitySchema } from "../schema/cart";
 import { Product } from "@prisma/client";
+import { produceMessage } from "../kafka/producer";
 
 
 export const addItemToCart = async (req: Request, res: Response) =>{
@@ -25,14 +26,22 @@ export const addItemToCart = async (req: Request, res: Response) =>{
             quantity: validateData.quantity
         }
     })
+    await produceMessage("user-topic", {
+      event: `Item ${cart.productId} Add  successflly`,
+      cart,
+    });
     res.json(cart)
 }
 export const deleteItemfromCart = async (req: Request, res: Response) =>{
   // Check if user is deleting its own cart item
-  await prismaCilent.cartItem.delete({
+  const cartItem = await prismaCilent.cartItem.delete({
     where: {
       id: +req.params.id,
     },
+  });
+  await produceMessage("user-topic", {
+    event: `Item  deleted  successflly`,
+    cartItem,
   });
   res.json("Item Deleted Successfully");
 }

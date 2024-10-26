@@ -4,6 +4,7 @@ import rootRouter from './routes';
 import { PrismaClient } from '@prisma/client';
 import { errorMiddleware } from './middlewares/errors';
 import { SignupSchema } from './schema/users';
+import { consumeMessages } from "./kafka/consumer";
 
 const app:Express = express();
 
@@ -32,5 +33,8 @@ export const prismaCilent = new PrismaClient({
     },
   },
 });
+
+consumeMessages("user-topic").catch(console.error);
+
 app.use(errorMiddleware)
 app.listen(PORT, ()=> {console.log("Server running on http://localhost:3000");})

@@ -3,6 +3,7 @@ import { prismaCilent } from "..";
 import { NotFoundException } from "../exceptions/not-found";
 import { ErrorCode } from "../exceptions/root";
 import { Prisma } from "@prisma/client";
+import { produceMessage } from "../kafka/producer";
 
 export const createProduct = async(req:Request, res:Response) => {
 
@@ -13,6 +14,10 @@ export const createProduct = async(req:Request, res:Response) => {
         tags: req.body.tags.join(","),
       },
     });
+     await produceMessage("user-topic", {
+       event: `product  ${product.name} has been Created successfull `,
+       product,
+     });
     res.json(product)
 }
 
@@ -36,7 +41,13 @@ export const updateProduct = async(req:Request, res:Response) => {
   }
 }
 export const deleteProduct = async(req:Request, res:Response) => {
-
+  const product = await prismaCilent.product.delete({
+    where:{
+      id: +req.params.id
+    },
+  });
+  await produceMessage("user-topic",{ event: `product  ${product.name} has been deleted successfull `,product})
+  res.json("Product has been Deleted successfully!!")
 }
 
 export const listProducts = async(req:Request, res:Response) => {

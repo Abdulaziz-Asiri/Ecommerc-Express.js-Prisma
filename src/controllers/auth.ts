@@ -8,6 +8,7 @@ import {ErrorCode} from '../exceptions/root'
 import { UprocessableEntity } from "../exceptions/validation";
 import { SignupSchema } from "../schema/users";
 import { NotFoundException } from "../exceptions/not-found";
+import { produceMessage } from "../kafka/producer";
 
 
 export const signup = async (req:Request, res:Response ,next: NextFunction) =>{
@@ -27,6 +28,7 @@ export const signup = async (req:Request, res:Response ,next: NextFunction) =>{
             password: hashSync(password, 10),
           },
         });
+        await produceMessage("user-topic", { event: "User SingUP successflly", user });
     res.status(200).json({
         status: 200,
         success: true,
@@ -60,10 +62,10 @@ export const login = async (req:Request, res:Response) =>{
             userId: user.id
         },JWT_SECRET)
         res.json({user, token})
-
+        await produceMessage("user-topic", { event: "USER-LOGGEDIN", user });
         res.status(200).json(user).end();
         return;
-
+        
     }catch(error:any){
         console.log(error)
         res.status(400).json({
