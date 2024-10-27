@@ -9,7 +9,7 @@ import { consumeMessages } from "./kafka/consumer";
 const app: Express = express();
 
 app.use(express.json()); // middleware module used to parse incoming request bodies in a middleware before your handlers.
-app.use("/", rootRouter);
+app.use("/api", rootRouter);
 
 export const prismaCilent = new PrismaClient({
   log: ["query"],

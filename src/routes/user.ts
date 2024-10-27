@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addAddress, changeUsesrRole, deleteAddress,listAddress, updatUser,listUsers } from "../controllers/user";
+import { addAddress, changeUsesrRole, deleteAddress,listAddress, updatUser,listUsers, getUserById } from "../controllers/user";
 import { errorHandler } from "../error-handler";
 import authMiddleware from "../middlewares/auth";
 import adminMiddleware from "../middlewares/admin";
@@ -7,12 +7,12 @@ import adminMiddleware from "../middlewares/admin";
 
 const usersRoutes: Router = Router();
 
-usersRoutes.post("/add-adderss", [authMiddleware], errorHandler(addAddress));
-usersRoutes.delete("/delete-adderss/:id", [authMiddleware], errorHandler(deleteAddress));
-usersRoutes.get("/adderss", [authMiddleware], errorHandler(listAddress));
-usersRoutes.put("/updateUser", [authMiddleware], errorHandler(updatUser));
-usersRoutes.put("/changeRole/:id", [authMiddleware, adminMiddleware], errorHandler(changeUsesrRole));
-usersRoutes.get("/listUsers",[authMiddleware, adminMiddleware],errorHandler(listUsers));
-usersRoutes.get("/getUser/:id", [authMiddleware, adminMiddleware], errorHandler(changeUsesrRole));
+usersRoutes.post("/address", [authMiddleware], errorHandler(addAddress));
+usersRoutes.delete("/address/:id", [authMiddleware], errorHandler(deleteAddress));
+usersRoutes.get("/address", [authMiddleware], errorHandler(listAddress));
+usersRoutes.put("/", [authMiddleware], errorHandler(updatUser));
+usersRoutes.put("/:id/role", [authMiddleware, adminMiddleware], errorHandler(changeUsesrRole));
+usersRoutes.get("/",[authMiddleware, adminMiddleware],errorHandler(listUsers));
+usersRoutes.get("/:id", [authMiddleware, adminMiddleware], errorHandler(getUserById));
 
 export default usersRoutes;

@@ -7,9 +7,9 @@ import adminMiddleware from "../middlewares/admin";
 
 const cartRoutes:Router = Router()
 
-cartRoutes.post('/Create-cart', [authMiddleware], errorHandler(addItemToCart))
-cartRoutes.get('/getCart', [authMiddleware], errorHandler(getCart))
-cartRoutes.delete("/deleteCart/:id", [authMiddleware], errorHandler(deleteItemfromCart));
-cartRoutes.put('/updateCart/:id', [authMiddleware], errorHandler(changeQuantity))
+cartRoutes.post('/', [authMiddleware], errorHandler(addItemToCart))
+cartRoutes.get('/', [authMiddleware], errorHandler(getCart))
+cartRoutes.delete("/:id", [authMiddleware], errorHandler(deleteItemfromCart));
+cartRoutes.put('/:id', [authMiddleware], errorHandler(changeQuantity))
 
 export default cartRoutes
