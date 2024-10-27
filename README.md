@@ -84,5 +84,5 @@ If you haven't already, download and install Postman.
 
 2. You can import an API collection in Postman to have all endpoints pre-configured:
 
-- If there is a Postman collection in the repository (e.g., api-collection.json), go to File > Import in Postman and upload the JSON file.
+-  Import Postman collection in the repository "E-commerce.postman_collection", go to File > Import in Postman and upload the JSON file.
 - The collection will appear in the left panel, where you can see all available endpoints.
