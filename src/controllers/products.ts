@@ -93,7 +93,7 @@ export const getProductById = async(req:Request, res:Response) => {
 //   }
 // };
 
-//TODO
+//TODO fix search functionality
 export const searchProducts = async (req: Request, res: Response) => {
   try {
     const searchTerm = req.query.q as string;
