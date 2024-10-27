@@ -9,7 +9,7 @@ import {
   listAllOrders,
   listOrders,
   listUserOrders,
-} from "../controllers/orders";
+} from "../controllers/order";
 import adminMiddleware from "../middlewares/admin";
 
 const orderRoutes: Router = Router();

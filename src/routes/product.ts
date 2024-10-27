@@ -7,7 +7,7 @@ import {
   listProducts,
   getProductById,
   searchProducts,
-} from "../controllers/products";
+} from "../controllers/product";
 import authMiddelware from '../middlewares/auth'
 import adminMiddleware from '../middlewares/admin';
 

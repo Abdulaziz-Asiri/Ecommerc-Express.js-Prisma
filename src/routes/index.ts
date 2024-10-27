@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { signup } from '../controllers/auth';
 import authRoutes from "./auth";
 import productsRoutes from './product';
-import usersRoutes from './users';
+import usersRoutes from './user';
 import cartRoutes from './cart';
 import orderRoutes from "./order";
 
